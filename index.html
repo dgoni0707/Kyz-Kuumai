@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Лабиринт - Игра</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-container">
+        <div class="header">
+            <h1>🧩 Лабиринт</h1>
+            <div class="game-info">
+                <div class="info-item">
+                    <span class="label">Уровень:</span>
+                    <span id="level">1</span>
+                </div>
+                <div class="info-item">
+                    <span class="label">Время:</span>
+                    <span id="timer">00:00</span>
+                </div>
+                <div class="info-item">
+                    <span class="label">Ходы:</span>
+                    <span id="moves">0 / 0</span>
+                </div>
+                <div class="info-item">
+                    <span class="label">Телепортов:</span>
+                    <span id="teleportsLeft">0</span>
+                </div>
+            </div>
+        </div>
+
+        <div id="teleportToast" class="teleport-toast" aria-live="polite"></div>
+
+        <div class="menu-screen" id="menuScreen">
+            <div class="menu-content">
+                <h2>Выберите сложность</h2>
+                <div class="character-buttons">
+                    <button class="character-btn character-aktan" data-character="aktan" type="button">
+                        <span class="character-name">Актан</span>
+                        <span class="character-desc">мужчина</span>
+                    </button>
+                    <button class="character-btn character-akylai" data-character="akylai" type="button">
+                        <span class="character-name">Акылай</span>
+                        <span class="character-desc">женщина</span>
+                    </button>
+                </div>
+                <div class="difficulty-buttons">
+                    <button class="difficulty-btn" data-difficulty="medium">
+                        <span class="difficulty-icon">🌿</span>
+                        <span class="difficulty-name">Легкий</span>
+                        <span class="difficulty-size">25x25</span>
+                    </button>
+                    <button class="difficulty-btn" data-difficulty="hard">
+                        <span class="difficulty-icon">🌳</span>
+                        <span class="difficulty-name">Средний</span>
+                        <span class="difficulty-size">35x35</span>
+                    </button>
+                    <button class="difficulty-btn" data-difficulty="extreme">
+                        <span class="difficulty-icon">🔥</span>
+                        <span class="difficulty-name">Сложно</span>
+                        <span class="difficulty-size">50x50</span>
+                    </button>
+                </div>
+                <div class="controls-info">
+                    <h3>Управление:</h3>
+                    <p>🔼 ⬇️ ⬅️ ➡️ Стрелки или WASD</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="game-screen" id="gameScreen" style="display: none;">
+            <div class="maze-container">
+                <canvas id="mazeCanvas"></canvas>
+            </div>
+            <div class="controls">
+                <button class="control-btn" id="restartBtn">🔄 Начать заново</button>
+                <button class="control-btn" id="menuBtn">📋 Меню</button>
+            </div>
+        </div>
+
+        <div class="win-screen" id="winScreen" style="display: none;">
+            <div class="win-content">
+                <h2>🎉 Поздравляем!</h2>
+                <p>Вы добрались до дома!</p>
+                <div class="win-stats">
+                    <div class="stat">
+                        <span class="stat-label">Время:</span>
+                        <span class="stat-value" id="winTime">00:00</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Ходы:</span>
+                        <span class="stat-value" id="winMoves">0</span>
+                    </div>
+                </div>
+                <div class="win-buttons">
+                    <button class="win-btn" id="nextLevelBtn">➡️ Следующий уровень</button>
+                    <button class="win-btn" id="menuWinBtn">📋 Меню</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="game-over-screen" id="gameOverScreen" style="display: none;">
+            <div class="game-over-content">
+                <h2>⏱️ Лимит ходов</h2>
+                <p>Вы израсходовали все ходы. Лимит: <strong id="overLimit">0</strong> (минимум прохождения + 10).</p>
+                <p class="over-moves">Ваши ходы: <strong id="overMoves">0</strong></p>
+                <div class="win-buttons">
+                    <button class="win-btn" id="retryBtn">🔄 Попробовать снова</button>
+                    <button class="win-btn" id="menuOverBtn">📋 Меню</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>

@@ -1,0 +1,439 @@
+/* Кыргыз этно — палитра: красный флаг, золото, войлок, природные тона */
+:root {
+    --kgz-red: #c41e3a;
+    --kgz-red-dark: #9a1830;
+    --kgz-gold: #d4a84b;
+    --kgz-gold-light: #f0d78c;
+    --kgz-cream: #f5ebe0;
+    --kgz-felt: #c4a574;
+    --kgz-brown: #6b5344;
+    --kgz-brown-dark: #3e2f28;
+    --kgz-ornament: #8b6914;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(160deg, var(--kgz-brown-dark) 0%, var(--kgz-brown) 35%, var(--kgz-felt) 70%, var(--kgz-cream) 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.game-container {
+    background: linear-gradient(180deg, var(--kgz-cream) 0%, #ebe0d4 100%);
+    border-radius: 20px;
+    border: 4px solid var(--kgz-ornament);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255,255,255,0.4);
+    max-width: 1200px;
+    width: 100%;
+    padding: 30px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 30px;
+    width: 100%;
+}
+
+.header h1 {
+    color: var(--kgz-red-dark);
+    font-size: 2.5em;
+    margin-bottom: 20px;
+    text-shadow: 1px 1px 0 var(--kgz-gold-light), 2px 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.game-info {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    flex-wrap: wrap;
+}
+
+.info-item {
+    background: linear-gradient(135deg, var(--kgz-red) 0%, var(--kgz-red-dark) 100%);
+    color: var(--kgz-gold-light);
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-size: 1.1em;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    border: 2px solid var(--kgz-gold);
+}
+
+.info-item .label {
+    font-weight: 600;
+    margin-right: 8px;
+}
+
+.teleport-toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: linear-gradient(135deg, var(--kgz-brown) 0%, var(--kgz-brown-dark) 100%);
+    color: var(--kgz-gold-light);
+    padding: 14px 24px;
+    border-radius: 12px;
+    border: 2px solid var(--kgz-gold);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    z-index: 1000;
+    font-size: 1rem;
+    opacity: 0;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    pointer-events: none;
+    max-width: 90vw;
+    text-align: center;
+}
+
+.teleport-toast.show {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+}
+
+/* Menu Screen — кыргыз этно */
+.menu-screen {
+    text-align: center;
+    width: 100%;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.menu-content h2 {
+    color: var(--kgz-red-dark);
+    font-size: 2em;
+    margin-bottom: 30px;
+    text-shadow: 1px 1px 0 var(--kgz-gold-light);
+}
+
+.character-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    margin-bottom: 32px;
+}
+
+.character-btn {
+    border: none;
+    padding: 18px 32px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    color: white;
+    font-weight: 600;
+}
+
+.character-btn:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+}
+
+.character-btn.active {
+    filter: brightness(0.82);
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.85), inset 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+.character-aktan {
+    background: linear-gradient(135deg, #6b8cae 0%, #4a6b8a 50%, #3d5a72 100%);
+    border: 2px solid var(--kgz-gold);
+}
+
+.character-akylai {
+    background: linear-gradient(135deg, var(--kgz-red) 0%, var(--kgz-red-dark) 50%, #7a1228 100%);
+    border: 2px solid var(--kgz-gold);
+}
+
+.character-name {
+    font-size: 1.2em;
+}
+
+.character-desc {
+    font-size: 0.85em;
+    opacity: 0.95;
+}
+
+.difficulty-buttons {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-top: 24px;
+    margin-bottom: 40px;
+}
+
+.difficulty-btn {
+    background: linear-gradient(135deg, var(--kgz-red) 0%, var(--kgz-red-dark) 100%);
+    color: var(--kgz-gold-light);
+    border: 2px solid var(--kgz-gold);
+    padding: 30px 20px;
+    border-radius: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.difficulty-btn:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.difficulty-btn:active {
+    transform: translateY(-2px);
+}
+
+.difficulty-icon {
+    font-size: 3em;
+}
+
+.difficulty-name {
+    font-size: 1.3em;
+    font-weight: 600;
+}
+
+.difficulty-size {
+    font-size: 0.9em;
+    opacity: 0.9;
+}
+
+.controls-info {
+    background: linear-gradient(180deg, var(--kgz-cream) 0%, var(--kgz-felt) 100%);
+    padding: 20px;
+    border-radius: 10px;
+    margin-top: 20px;
+    border: 2px solid var(--kgz-ornament);
+    box-shadow: inset 0 2px 8px rgba(255,255,255,0.5);
+}
+
+.controls-info h3 {
+    color: var(--kgz-red-dark);
+    margin-bottom: 10px;
+}
+
+.controls-info p {
+    color: var(--kgz-brown-dark);
+    font-size: 1.1em;
+}
+
+/* Game Screen */
+.game-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.maze-container {
+    background: #2d5a27;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: inset 0 4px 15px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.2);
+    margin-bottom: 20px;
+    overflow: auto;
+    max-width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#mazeCanvas {
+    display: block;
+    background: #3d6b1e;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+.controls {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.control-btn {
+    background: linear-gradient(135deg, var(--kgz-red) 0%, var(--kgz-red-dark) 100%);
+    color: var(--kgz-gold-light);
+    border: 2px solid var(--kgz-gold);
+    padding: 12px 25px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+}
+
+.control-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+}
+
+.control-btn:active {
+    transform: translateY(0);
+}
+
+/* Win Screen — кыргыз этно */
+.win-screen {
+    text-align: center;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.win-content {
+    background: linear-gradient(135deg, var(--kgz-red) 0%, var(--kgz-red-dark) 100%);
+    color: var(--kgz-gold-light);
+    padding: 40px;
+    border-radius: 15px;
+    border: 3px solid var(--kgz-gold);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+}
+
+.win-content h2 {
+    font-size: 2.5em;
+    margin-bottom: 20px;
+}
+
+.win-content > p {
+    font-size: 1.3em;
+    margin-bottom: 30px;
+}
+
+.win-stats {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+}
+
+.stat {
+    background: rgba(212, 168, 75, 0.35);
+    padding: 15px 30px;
+    border-radius: 10px;
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--kgz-gold-light);
+}
+
+.stat-label {
+    display: block;
+    font-size: 0.9em;
+    opacity: 0.9;
+    margin-bottom: 5px;
+}
+
+.stat-value {
+    display: block;
+    font-size: 1.5em;
+    font-weight: 600;
+}
+
+.win-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.win-btn {
+    background: var(--kgz-gold-light);
+    color: var(--kgz-red-dark);
+    border: 2px solid var(--kgz-ornament);
+    padding: 12px 25px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.win-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+}
+
+.win-btn:active {
+    transform: translateY(0);
+}
+
+/* Game Over Screen — кыргыз этно */
+.game-over-screen {
+    text-align: center;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.game-over-content {
+    background: linear-gradient(135deg, var(--kgz-red-dark) 0%, #6b1525 100%);
+    color: var(--kgz-gold-light);
+    padding: 40px;
+    border-radius: 15px;
+    border: 3px solid var(--kgz-gold);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+}
+
+.game-over-content h2 {
+    font-size: 2.5em;
+    margin-bottom: 20px;
+}
+
+.game-over-content > p {
+    font-size: 1.1em;
+    margin-bottom: 12px;
+}
+
+.game-over-content .over-moves {
+    margin-bottom: 28px;
+    font-size: 1.2em;
+}
+
+#moves.moves-warning {
+    color: #ffd700;
+}
+
+#moves.moves-over {
+    color: #ff6b6b;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .game-container {
+        padding: 15px;
+    }
+
+    .header h1 {
+        font-size: 2em;
+    }
+
+    .difficulty-buttons {
+        grid-template-columns: 1fr;
+    }
+
+    .game-info {
+        gap: 15px;
+    }
+
+    .info-item {
+        padding: 8px 15px;
+        font-size: 0.9em;
+    }
+}
