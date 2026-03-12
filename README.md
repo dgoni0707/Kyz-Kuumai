@@ -42,4 +42,4 @@
 
 - **Для быстрой загрузки игры, используйте ссылку**: [Kyz-Kuumai](https://dgoni0707.github.io/Kyz-Kuumai/)
 - **Для перехода на GitHub репозиторий, используйте ссылку**: [GitHub](https://github.com/dgoni0707/Kyz-Kuumai)
-- **Что-бы открыть презентацию, используйте ссылку**: [Презентация]()
+- **Что-бы открыть презентацию, используйте ссылку**: [Презентация](https://www.canva.com/design/DAHDv4MYTSo/dEiMlPab7yP97hrtSAbtnQ/edit?utm_content=DAHDv4MYTSo&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton)
