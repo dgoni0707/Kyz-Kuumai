@@ -53,6 +53,7 @@ const imgIssykKul = new Image();
 const imgTianShan = new Image();
 const imgAktan = new Image();
 const imgAkylai = new Image();
+const imgYurt = new Image();
 
 function redrawIfPlaying() {
   if (gameScreen.style.display !== "none") drawMaze();
@@ -67,12 +68,14 @@ imgIssykKul.onload = redrawIfPlaying;
 imgTianShan.onload = redrawIfPlaying;
 imgAktan.onload = redrawIfPlaying;
 imgAkylai.onload = redrawIfPlaying;
+imgYurt.onload = redrawIfPlaying;
 
 imgFlag.onerror = onImageError;
 imgIssykKul.onerror = onImageError;
 imgTianShan.onerror = onImageError;
 imgAktan.onerror = onImageError;
 imgAkylai.onerror = onImageError;
+imgYurt.onerror = onImageError;
 
 // Используем ваши файлы из папки Image
 imgFlag.src = "Image/flag.png";
@@ -80,6 +83,7 @@ imgIssykKul.src = "Image/image.png";
 imgTianShan.src = "Image/Screenshot 2026-02-12 151637.png";
 imgAktan.src = "Image/aktan.png";
 imgAkylai.src = "Image/akylai.png";
+imgYurt.src = "Image/yurt.png";
 
 // Инициализация
 document.querySelectorAll(".character-btn").forEach((btn) => {
@@ -750,62 +754,34 @@ function drawMaze() {
     }
   }
 
-  // —— Дом внизу по центру ——
+  // —— Дом (Юрта) внизу по центру ——
   const houseY = offsetY + config.size * cellSize;
   const houseH = HOUSE_STRIP * cellSize;
   const houseCenterX = mx + (exit.x + 0.5) * cellSize;
-  const houseW = Math.min(cellSize * 2.2, config.size * cellSize * 0.5);
+  const houseW = Math.min(cellSize * 2.5, config.size * cellSize * 0.6); // Чуть шире под юрту
   const houseX = houseCenterX - houseW / 2;
 
-  ctx.fillStyle = "#4a4a4a";
-  ctx.fillRect(houseX - 4, houseY + houseH - 12, houseW + 8, 14);
-  ctx.fillStyle = "#8b4513";
-  ctx.fillRect(houseX, houseY + houseH * 0.35, houseW, houseH * 0.55);
-  ctx.strokeStyle = "#5d3a1a";
-  ctx.lineWidth = 2;
-  ctx.strokeRect(houseX, houseY + houseH * 0.35, houseW, houseH * 0.55);
-  ctx.fillStyle = "#722f37";
-  ctx.beginPath();
-  ctx.moveTo(houseCenterX, houseY + 8);
-  ctx.lineTo(houseX + houseW + 10, houseY + houseH * 0.38);
-  ctx.lineTo(houseX - 10, houseY + houseH * 0.38);
-  ctx.closePath();
-  ctx.fill();
-  ctx.strokeStyle = "#5a2529";
-  ctx.lineWidth = 2;
-  ctx.stroke();
-  ctx.fillStyle = "#3d2914";
-  ctx.fillRect(
-    houseCenterX - houseW * 0.15,
-    houseY + houseH * 0.5,
-    houseW * 0.3,
-    houseH * 0.4,
-  );
-  ctx.fillStyle = "#daa520";
-  ctx.beginPath();
-  ctx.arc(
-    houseCenterX + houseW * 0.08,
-    houseY + houseH * 0.68,
-    3,
-    0,
-    Math.PI * 2,
-  );
-  ctx.fill();
-  ctx.fillStyle = "#87ceeb";
-  ctx.fillRect(
-    houseCenterX - houseW * 0.35,
-    houseY + houseH * 0.45,
-    houseW * 0.25,
-    houseH * 0.2,
-  );
-  ctx.strokeStyle = "#3d2914";
-  ctx.lineWidth = 1;
-  ctx.strokeRect(
-    houseCenterX - houseW * 0.35,
-    houseY + houseH * 0.45,
-    houseW * 0.25,
-    houseH * 0.2,
-  );
+  // Отрисовка юрты
+  if (imgYurt.complete && imgYurt.naturalWidth > 0) {
+    // Вычисляем пропорции для сохранения соотношения сторон картинки
+    const yurtRatio = imgYurt.naturalHeight / imgYurt.naturalWidth;
+    const drawW = houseW * 1.5; // Делаем юрту достаточно большой
+    const drawH = drawW * yurtRatio;
+    
+    // Сместим чуть ниже и центрируем
+    const drawX = houseCenterX - drawW / 2;
+    const drawY = houseY + (houseH - drawH) / 2 + cellSize * 0.5;
+
+    ctx.drawImage(imgYurt, drawX, drawY, drawW, drawH);
+  } else {
+    // Заглушка (коричневый круг/овал), если картинка не загрузилась
+    ctx.fillStyle = "#8b4513";
+    ctx.beginPath();
+    ctx.ellipse(houseCenterX, houseY + houseH / 2, houseW / 1.5, houseH / 2, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = "#3d2914";
+    ctx.fillRect(houseCenterX - houseW * 0.15, houseY + houseH * 0.6, houseW * 0.3, houseH * 0.3);
+  }
 
   // Клетка выхода — подсветка
   const exitPx = mx + exit.x * cellSize;
