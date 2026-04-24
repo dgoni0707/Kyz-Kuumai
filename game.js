@@ -1,4 +1,3 @@
-// Конфигурация сложности (телепортов макс 10, по разному на уровнях)
 const DIFFICULTIES = {
   easy: { size: 15, cellSize: 30, teleports: 10 },
   medium: { size: 25, cellSize: 20, teleports: 7 },
@@ -31,12 +30,18 @@ let gameState = {
   movesSinceLastTeleport: 0,
   startTime: null,
   timerInterval: null,
+  pursuerInterval: null,
+  ices: [], // Лед
   pursuer: {
     x: 0,
     y: 0,
     active: false,
     path: [],
     pathIndex: 0,
+    speed: 7,
+    countdown: 5,
+    frozenUntil: null,
+    pendingFreeze: 0,
   },
 };
 
@@ -186,18 +191,26 @@ document.addEventListener("keydown", (e) => {
     e.preventDefault();
     gameState.moves++;
     gameState.movesSinceLastTeleport++;
-    // Логика преследователя (Кыз Куумай)
+
+    // Проверка сбора льда
+    for (let ice of gameState.ices) {
+      if (ice.active && ice.x === gameState.player.x && ice.y === gameState.player.y) {
+        ice.active = false;
+        if (!gameState.pursuer.active) {
+          gameState.pursuer.pendingFreeze += 3000;
+        } else {
+          const currentFreeze = gameState.pursuer.frozenUntil && gameState.pursuer.frozenUntil > Date.now() 
+              ? gameState.pursuer.frozenUntil 
+              : Date.now();
+          gameState.pursuer.frozenUntil = currentFreeze + 3000;
+        }
+        showFreezeToast();
+      }
+    }
+
+    // Логика преследователя (Кыз Куумай) - теперь движется сам в реальном времени
     const oldPx = gameState.pursuer.x;
     const oldPy = gameState.pursuer.y;
-    
-    if (gameState.pursuer.active) {
-      movePursuer();
-    } else if (gameState.moves >= 2) {
-      gameState.pursuer.active = true;
-      gameState.pursuer.x = gameState.startPosition.x;
-      gameState.pursuer.y = gameState.startPosition.y;
-      gameState.pursuer.pathIndex = 0;
-    }
 
     const newX = gameState.player.x;
     const newY = gameState.player.y;
@@ -258,7 +271,95 @@ function startGame(difficulty) {
       gameState.exit,
     ),
     pathIndex: 0,
+    speed: 7,
+    countdown: 5,
+    frozenUntil: null,
+    pendingFreeze: 0,
   };
+
+  gameState.ices = [];
+  let targetIceCount = 6;
+  if (difficulty === "easy") targetIceCount = 2;
+  else if (difficulty === "medium") targetIceCount = 4;
+
+  const path = gameState.pursuer.path;
+  let validNodes = [];
+  // Убираем старт (i=0) и отсекаем точки, которые ближе 15 шагов к выходу
+  for (let i = 1; i < path.length; i++) {
+    const stepsToExit = path.length - 1 - i;
+    if (stepsToExit >= 15) {
+      validNodes.push(path[i]);
+    }
+  }
+
+  if (validNodes.length > 0) {
+    // Гарантируем, что льды будут распределены по кускам пути, чтобы не стоять рядом
+    const actualIceCount = Math.min(targetIceCount, Math.floor(validNodes.length / 3));
+    if (actualIceCount > 0) {
+      const chunkSize = Math.floor(validNodes.length / actualIceCount);
+      for (let i = 0; i < actualIceCount; i++) {
+        const chunkStart = i * chunkSize;
+        const chunkEnd = (i === actualIceCount - 1) ? validNodes.length : chunkStart + chunkSize;
+        
+        let safeStart = chunkStart;
+        let safeEnd = chunkEnd;
+        // Отступаем от краев куска, чтобы льдинки не стояли вплотную на стыках кусков
+        if (chunkEnd - chunkStart >= 5) {
+          safeStart += 1;
+          safeEnd -= 1;
+        }
+        
+        const chunk = validNodes.slice(safeStart, safeEnd);
+        if (chunk.length > 0) {
+          const randomNode = chunk[Math.floor(Math.random() * chunk.length)];
+          gameState.ices.push({ x: randomNode.x, y: randomNode.y, active: true });
+        }
+      }
+    }
+  }
+
+  const dangerItem = document.getElementById("dangerItem");
+  const dangerTimer = document.getElementById("dangerTimer");
+  if (gameState.pursuerInterval) clearInterval(gameState.pursuerInterval);
+  if (dangerItem && dangerTimer) {
+     dangerItem.style.display = "flex";
+     dangerTimer.textContent = "5";
+     gameState.pursuerInterval = setInterval(() => {
+        gameState.pursuer.countdown--;
+        if (gameState.pursuer.countdown > 0) {
+           dangerTimer.textContent = gameState.pursuer.countdown;
+        } else {
+           clearInterval(gameState.pursuerInterval);
+           dangerItem.style.display = "none";
+           gameState.pursuer.active = true;
+           gameState.pursuer.x = gameState.startPosition.x;
+           gameState.pursuer.y = gameState.startPosition.y;
+           gameState.pursuer.pathIndex = 0;
+           
+           if (gameState.pursuer.pendingFreeze > 0) {
+              gameState.pursuer.frozenUntil = Date.now() + gameState.pursuer.pendingFreeze;
+              gameState.pursuer.pendingFreeze = 0;
+           }
+
+           drawMaze();
+
+           // Запуск беспрерывного бега преследователя в реальном времени
+           gameState.pursuerInterval = setInterval(() => {
+              if (gameScreen.style.display === "none") return; // Если на другом экране
+              if (gameState.pursuer.frozenUntil && Date.now() < gameState.pursuer.frozenUntil) {
+                 // Если заморожен, просто перерисовываем, чтобы показать эффект
+                 drawMaze();
+                 return;
+              }
+              const oldPx = gameState.pursuer.x;
+              const oldPy = gameState.pursuer.y;
+              movePursuer();
+              drawMaze();
+              checkPursuerCollision(oldPx, oldPy, gameState.player.x, gameState.player.y);
+           }, 1000 / gameState.pursuer.speed); // 1 шаг в секунду (при speed=1)
+        }
+     }, 1000);
+  }
 
   gameState.deadEnds = getDeadEnds(
     gameState.maze,
@@ -301,6 +402,10 @@ function stopTimer() {
   if (gameState.timerInterval) {
     clearInterval(gameState.timerInterval);
     gameState.timerInterval = null;
+  }
+  if (gameState.pursuerInterval) {
+    clearInterval(gameState.pursuerInterval);
+    gameState.pursuerInterval = null;
   }
 }
 
@@ -662,6 +767,30 @@ function drawBushSegment(ctx, x1, y1, x2, y2, cellSize) {
   }
 }
 
+function showFreezeToast() {
+  const el = document.getElementById("teleportToast");
+  el.textContent = "Вы подобрали лёд! Догоняющий заморожен на 3 секунды ❄️";
+  el.classList.add("show");
+  clearTimeout(teleportToastTimer);
+  teleportToastTimer = setTimeout(() => el.classList.remove("show"), 2500);
+}
+
+function drawIce(ctx, x, y, size) {
+  ctx.fillStyle = "rgba(173, 216, 230, 0.8)";
+  ctx.fillRect(x + size * 0.2, y + size * 0.2, size * 0.6, size * 0.6);
+  ctx.strokeStyle = "#87CEFA";
+  ctx.lineWidth = 2;
+  ctx.strokeRect(x + size * 0.2, y + size * 0.2, size * 0.6, size * 0.6);
+  
+  // Внутренний блик
+  ctx.fillStyle = "rgba(255, 255, 255, 0.7)";
+  ctx.beginPath();
+  ctx.moveTo(x + size * 0.25, y + size * 0.25);
+  ctx.lineTo(x + size * 0.5, y + size * 0.25);
+  ctx.lineTo(x + size * 0.25, y + size * 0.5);
+  ctx.fill();
+}
+
 function drawMaze() {
   const config = DIFFICULTIES[gameState.currentDifficulty];
   const cellSize = config.cellSize;
@@ -789,6 +918,13 @@ function drawMaze() {
   ctx.fillStyle = "rgba(34, 139, 34, 0.4)";
   ctx.fillRect(exitPx + 2, exitPy + 2, cellSize - 4, cellSize - 4);
 
+  // Отрисовка льда
+  for (let ice of gameState.ices) {
+    if (ice.active) {
+      drawIce(ctx, mx + ice.x * cellSize, offsetY + ice.y * cellSize, cellSize);
+    }
+  }
+
   // Отрисовка преследователя (Кыз Куумай)
   if (gameState.pursuer.active) {
     const pX = mx + gameState.pursuer.x * cellSize;
@@ -816,6 +952,22 @@ function drawMaze() {
         Math.PI * 2,
       );
       ctx.fill();
+    }
+
+    // Если заморожен, рисуем кубик льда вокруг
+    if (gameState.pursuer.frozenUntil && Date.now() < gameState.pursuer.frozenUntil) {
+      ctx.fillStyle = "rgba(173, 216, 230, 0.6)";
+      ctx.fillRect(pX, pY, cellSize, cellSize);
+      ctx.strokeStyle = "#ffffff";
+      ctx.lineWidth = 2;
+      ctx.strokeRect(pX, pY, cellSize, cellSize);
+      
+      // Снежинка/блик
+      ctx.fillStyle = "white";
+      ctx.font = `${cellSize*0.6}px Arial`;
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText("❄️", pX + cellSize/2, pY + cellSize/2);
     }
   }
 
@@ -1088,7 +1240,9 @@ function updateUI() {
 }
 
 function startTimer() {
-  stopTimer();
+  if (gameState.timerInterval) {
+    clearInterval(gameState.timerInterval);
+  }
   gameState.timerInterval = setInterval(() => {
     const elapsed = Date.now() - gameState.startTime;
     const minutes = Math.floor(elapsed / 60000);
@@ -1102,5 +1256,9 @@ function stopTimer() {
   if (gameState.timerInterval) {
     clearInterval(gameState.timerInterval);
     gameState.timerInterval = null;
+  }
+  if (gameState.pursuerInterval) {
+    clearInterval(gameState.pursuerInterval);
+    gameState.pursuerInterval = null;
   }
 }

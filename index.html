@@ -27,6 +27,10 @@
                     <span class="label">Телепортов:</span>
                     <span id="teleportsLeft">0</span>
                 </div>
+                <div class="info-item" id="dangerItem" style="display: none; background-color: rgba(255,0,0,0.2); border-radius: 5px; padding: 2px 5px;">
+                    <span class="label" style="color: #ff4444;">Погоня через:</span>
+                    <span id="dangerTimer" style="color: #ff4444; font-weight: bold; margin-left: 5px;">5</span>
+                </div>
                 <div class="info-item character-avatar-mini">
                     <img id="headerAvatar" src="" alt="Skin" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; display: none; border: 2px solid var(--kgz-gold);">
                 </div>
@@ -51,20 +55,20 @@
                     </button>
                 </div>
                 <div class="difficulty-buttons">
-                    <button class="difficulty-btn" data-difficulty="medium">
+                    <button class="difficulty-btn" data-difficulty="easy">
                         <span class="difficulty-icon">🌿</span>
                         <span class="difficulty-name">Легкий</span>
+                        <span class="difficulty-size">15x15</span>
+                    </button>
+                    <button class="difficulty-btn" data-difficulty="medium">
+                        <span class="difficulty-icon">🌳</span>
+                        <span class="difficulty-name">Средний</span>
                         <span class="difficulty-size">25x25</span>
                     </button>
                     <button class="difficulty-btn" data-difficulty="hard">
-                        <span class="difficulty-icon">🌳</span>
-                        <span class="difficulty-name">Средний</span>
-                        <span class="difficulty-size">35x35</span>
-                    </button>
-                    <button class="difficulty-btn" data-difficulty="extreme">
                         <span class="difficulty-icon">🔥</span>
                         <span class="difficulty-name">Сложно</span>
-                        <span class="difficulty-size">50x50</span>
+                        <span class="difficulty-size">35x35</span>
                     </button>
                 </div>
                 <div class="controls-info">
